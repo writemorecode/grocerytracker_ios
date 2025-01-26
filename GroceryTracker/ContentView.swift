@@ -1,52 +1,91 @@
-//
-//  ContentView.swift
-//  GroceryTracker
-//
-//  Created by Gustav Karlsson on 2024-12-25.
-//
-
+// ContentView.swift
 import SwiftUI
 import VisionKit
 
+/// Main view of the application
 struct ContentView: View {
-    @State private var scannedText = ""
-    @State private var showingScanner = false
-    @State private var isDeviceSupported: Bool = false
+    // StateObject ensures the model persists across view updates
+    @StateObject private var scannerModel = ScannerModel()
+    @State private var isUploading = false
+    @State private var showAlert = false
+    @State private var alertMessage = ""
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
-                if !scannedText.isEmpty {
-                    ScrollView {
-                        Text(scannedText)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
+                // Display current scanning instruction
+                Text(scannerModel.currentStep.instruction)
+                    .font(.headline)
+                    .padding()
+                
+                // Show preview of currently scanned product
+                if let product = scannerModel.currentProduct {
+                    ProductPreview(product: product)
                 }
                 
-                if isDeviceSupported {
-                    Button(action: { showingScanner = true }) {
-                        Label("Scan Text", systemImage: "text.viewfinder")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                    }
-                    .padding()
+                // Live Text scanner view if supported by device
+                if DataScannerViewController.isSupported {
+                    ScannerView(scannerModel: scannerModel)
+                        .frame(maxHeight: 400)
                 } else {
-                    Text("Live Text not supported on this device")
+                    Text("Live Text not supported")
                         .foregroundColor(.red)
+                }
+                
+                // Reset button appears after scan completion
+                if scannerModel.currentStep == .complete {
+                    Button(action: uploadProduct) {
+                        HStack {
+                            if isUploading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            }
+                            Text("Upload Product Data")
+                        }
+                        .frame(maxWidth: .infinity)
                         .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                    }
+                    .disabled(isUploading)
+                    .padding()
+                    
                 }
             }
-            .navigationTitle("Live Text Scanner")
-            .sheet(isPresented: $showingScanner) {
-                ScannerView(scannedText: $scannedText)
-            }
-            .onAppear {
-                isDeviceSupported = DataScannerViewController.isSupported
+            
+        }
+        .navigationTitle("Product Scanner")
+    }
+    
+    private func uploadProduct() {
+        guard let product = scannerModel.currentProduct else { return }
+        
+        isUploading = true
+        
+        Task {
+            do {
+                try await NetworkManager.shared.uploadProduct(product)
+                await MainActor.run {
+                    alertMessage = "Successfully uploaded product data"
+                    showAlert = true
+                    isUploading = false
+                }
+            } catch NetworkError.httpError(let code) {
+                await MainActor.run {
+                    alertMessage = "Upload failed with status code: \(code)"
+                    showAlert = true
+                    isUploading = false
+                }
+            } catch {
+                await MainActor.run {
+                    alertMessage = "Upload failed: \(error.localizedDescription)"
+                    showAlert = true
+                    isUploading = false
+                }
             }
         }
     }
 }
+
+

@@ -4,5 +4,27 @@
 <dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Need camera to scan things.</string>
+    
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Need location access to find nearby stores</string>
+    
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>Required to connect to local backend service</string>
+
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>192.168.0.6</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+            </dict>
+        </dict>
+    </dict>
 </dict>
 </plist>

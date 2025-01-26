@@ -7,11 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6F4244B92D43DF3E00E75982 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4244B82D43DF3E00E75982 /* StoreManager.swift */; };
+		6F4244BB2D43E03500E75982 /* StoreSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4244BA2D43E03500E75982 /* StoreSelectionView.swift */; };
+		6F4244BD2D43E04800E75982 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4244BC2D43E04800E75982 /* LocationManager.swift */; };
 		6F870A062D1C4B7C003807C3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F870A052D1C4B7C003807C3 /* ContentView.swift */; };
 		6F870A082D1C4BF4003807C3 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F870A072D1C4BF4003807C3 /* ScannerView.swift */; };
 		6F9ABFCA2D161ED500BC0E96 /* GroceryTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9ABFC92D161ED500BC0E96 /* GroceryTrackerApp.swift */; };
 		6F9ABFCE2D161ED600BC0E96 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F9ABFCD2D161ED600BC0E96 /* Assets.xcassets */; };
 		6F9ABFD12D161ED600BC0E96 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F9ABFD02D161ED600BC0E96 /* Preview Assets.xcassets */; };
+		6FCDA6B92D2B063A00C0D017 /* ScannerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FCDA6B42D2B063A00C0D017 /* ScannerModel.swift */; };
+		6FCDA6BA2D2B063A00C0D017 /* ProductData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FCDA6B52D2B063A00C0D017 /* ProductData.swift */; };
+		6FCDA6BB2D2B063A00C0D017 /* ProductPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FCDA6B62D2B063A00C0D017 /* ProductPreview.swift */; };
+		6FCDA6BC2D2B063A00C0D017 /* ScanStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FCDA6B72D2B063A00C0D017 /* ScanStep.swift */; };
+		6FFDB0242D3C5BE2000E60E8 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFDB0232D3C5BE2000E60E8 /* NetworkManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +40,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6F4244B82D43DF3E00E75982 /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
+		6F4244BA2D43E03500E75982 /* StoreSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreSelectionView.swift; sourceTree = "<group>"; };
+		6F4244BC2D43E04800E75982 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		6F870A032D1C46F5003807C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		6F870A042D1C47C7003807C3 /* GroceryTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GroceryTracker.entitlements; sourceTree = "<group>"; };
 		6F870A052D1C4B7C003807C3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -42,6 +53,11 @@
 		6F9ABFD02D161ED600BC0E96 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		6F9ABFD62D161ED600BC0E96 /* GroceryTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GroceryTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F9ABFE02D161ED600BC0E96 /* GroceryTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GroceryTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6FCDA6B42D2B063A00C0D017 /* ScannerModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScannerModel.swift; sourceTree = "<group>"; };
+		6FCDA6B52D2B063A00C0D017 /* ProductData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductData.swift; sourceTree = "<group>"; };
+		6FCDA6B62D2B063A00C0D017 /* ProductPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductPreview.swift; sourceTree = "<group>"; };
+		6FCDA6B72D2B063A00C0D017 /* ScanStep.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanStep.swift; sourceTree = "<group>"; };
+		6FFDB0232D3C5BE2000E60E8 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,9 +109,17 @@
 				6F870A042D1C47C7003807C3 /* GroceryTracker.entitlements */,
 				6F870A032D1C46F5003807C3 /* Info.plist */,
 				6F9ABFC92D161ED500BC0E96 /* GroceryTrackerApp.swift */,
+				6F4244BA2D43E03500E75982 /* StoreSelectionView.swift */,
+				6F4244BC2D43E04800E75982 /* LocationManager.swift */,
+				6F4244B82D43DF3E00E75982 /* StoreManager.swift */,
+				6FCDA6B52D2B063A00C0D017 /* ProductData.swift */,
+				6FCDA6B62D2B063A00C0D017 /* ProductPreview.swift */,
+				6FCDA6B42D2B063A00C0D017 /* ScannerModel.swift */,
+				6FCDA6B72D2B063A00C0D017 /* ScanStep.swift */,
 				6F9ABFCD2D161ED600BC0E96 /* Assets.xcassets */,
 				6F9ABFCF2D161ED600BC0E96 /* Preview Content */,
 				6F870A052D1C4B7C003807C3 /* ContentView.swift */,
+				6FFDB0232D3C5BE2000E60E8 /* NetworkManager.swift */,
 				6F870A072D1C4BF4003807C3 /* ScannerView.swift */,
 			);
 			path = GroceryTracker;
@@ -239,9 +263,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6FFDB0242D3C5BE2000E60E8 /* NetworkManager.swift in Sources */,
+				6F4244BB2D43E03500E75982 /* StoreSelectionView.swift in Sources */,
+				6FCDA6B92D2B063A00C0D017 /* ScannerModel.swift in Sources */,
+				6F4244BD2D43E04800E75982 /* LocationManager.swift in Sources */,
+				6FCDA6BA2D2B063A00C0D017 /* ProductData.swift in Sources */,
+				6FCDA6BB2D2B063A00C0D017 /* ProductPreview.swift in Sources */,
 				6F870A082D1C4BF4003807C3 /* ScannerView.swift in Sources */,
 				6F870A062D1C4B7C003807C3 /* ContentView.swift in Sources */,
+				6F4244B92D43DF3E00E75982 /* StoreManager.swift in Sources */,
 				6F9ABFCA2D161ED500BC0E96 /* GroceryTrackerApp.swift in Sources */,
+				6FCDA6BC2D2B063A00C0D017 /* ScanStep.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

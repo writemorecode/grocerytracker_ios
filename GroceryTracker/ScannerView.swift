@@ -1,33 +1,28 @@
-//
-//  ScannerView.swift
-//  GroceryTracker
-//
-//  Created by Gustav Karlsson on 2024-12-25.
-//
-
+// ScannerView.swift
 import SwiftUI
 import VisionKit
 
 struct ScannerView: UIViewControllerRepresentable {
-    @Binding var scannedText: String
-    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var scannerModel: ScannerModel
     
     func makeUIViewController(context: Context) -> DataScannerViewController {
+        // Initialize with both text and barcode recognition
         let scanner = DataScannerViewController(
-            recognizedDataTypes: [.text()],
+            recognizedDataTypes: [.text(), .barcode(symbologies: [.ean13])],
             qualityLevel: .accurate,
-            recognizesMultipleItems: true,
+            recognizesMultipleItems: false,
             isHighFrameRateTrackingEnabled: true,
-            isPinchToZoomEnabled: true,
-            isGuidanceEnabled: true,
-            isHighlightingEnabled: true
+            isPinchToZoomEnabled: true
         )
+        
         scanner.delegate = context.coordinator
         try? scanner.startScanning()
         return scanner
     }
     
-    func updateUIViewController(_ uiViewController: DataScannerViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: DataScannerViewController, context: Context) {
+        // No need to recreate the scanner
+    }
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -41,11 +36,18 @@ struct ScannerView: UIViewControllerRepresentable {
         }
         
         func dataScanner(_ dataScanner: DataScannerViewController, didTapOn item: RecognizedItem) {
-            switch item {
-            case .text(let text):
-                parent.scannedText = text.transcript
-                parent.dismiss()
-            default:
+            // Only process the type we're currently looking for
+            switch parent.scannerModel.currentStep {
+            case .name, .price:
+                if case .text(let text) = item {
+                    parent.scannerModel.processScannedText(text.transcript)
+                }
+            case .barcode:
+                if case .barcode(let barcode) = item,
+                   let value = barcode.payloadStringValue {
+                    parent.scannerModel.processScannedText(value)
+                }
+            case .complete:
                 break
             }
         }
