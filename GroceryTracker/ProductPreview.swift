@@ -9,7 +9,9 @@ struct ProductPreview: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Name: \(product.name)")
             if product.price > 0 {
-                Text("Price: $\(String(format: "%.2f", product.price))")
+                let priceString = String(format: "%.2f", product.price)
+                let currencySymbol = Locale.current.currencySymbol ?? ""
+                Text("Price: \(priceString) \(currencySymbol)")
             }
             if !product.barcode.isEmpty {
                 Text("Barcode: \(product.barcode)")

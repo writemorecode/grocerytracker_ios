@@ -50,9 +50,12 @@ class ScannerModel: ObservableObject {
     }
     
     private func extractPrice(from text: String) -> Double? {
-        let numbers = text.filter { $0.isNumber }
-        guard numbers.count >= 3, let value = Int(numbers) else { return nil }
-        return Double(value) / 100.0
+        let re = /\d+[\.\,]\d{1,2}/
+        guard let match = text.firstMatch(of: re) else { return nil }
+        var matchString = String(text[match.range])
+        if let price = Double(matchString) { return price }
+        matchString.replace(".", with: ",")
+        return Double(matchString)
     }
     
     private func isValidEAN(_ code: String) -> Bool {
