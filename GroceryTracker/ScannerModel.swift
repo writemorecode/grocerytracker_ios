@@ -1,88 +1,89 @@
-// ScannerModel.swift
 import Foundation
 import VisionKit
 
-/// Manages the scanning process and data
 class ScannerModel: ObservableObject {
-    // Published properties for view updates
     @Published var currentStep: ScanStep = .name
     @Published var currentProduct: ProductData?
     
-    // Temporary storage for building product data
-    private var tempName: String = ""
-    private var tempPrice: Double = 0.0
-    private var tempBarcode: String = ""
+    private var scannedName: String?
+    private var scannedPrice: Double?
+    private var scannedBarcode: String?
     
-    /// Process scanned text based on current step
-    /// - Parameter text: The text recognized by the scanner
     func processScannedText(_ text: String) {
         switch currentStep {
         case .name:
-            tempName = text
-            currentStep = .price
-            updateCurrentProduct()
-            
+            handleNameScan(text)
         case .price:
-            if let price = extractPrice(from: text) {
-                tempPrice = price
-                currentStep = .barcode
-                updateCurrentProduct()
-            }
-            
+            handlePriceScan(text)
         case .barcode:
-            if isValidEAN(text) {
-                tempBarcode = text
-                finalizeProduct()
-            }
-            
+            handleBarcodeScan(text)
         case .complete:
             break
         }
     }
     
-    /// Extract price value from scanned text
-    /// - Parameter text: Text containing price
-    /// - Returns: Decimal price if found, nil otherwise
+    private func handleNameScan(_ text: String) {
+        scannedName = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        currentStep = .price
+        updateCurrentProduct()
+    }
+    
+    private func handlePriceScan(_ text: String) {
+        guard let price = extractPrice(from: text) else { return }
+        scannedPrice = price
+        currentStep = .barcode
+        updateCurrentProduct()
+    }
+    
+    private func handleBarcodeScan(_ text: String) {
+        guard isValidEAN(text) else { return }
+        scannedBarcode = text
+        finalizeProduct()
+    }
+    
     private func extractPrice(from text: String) -> Double? {
-        // Extract digits only
         let numbers = text.filter { $0.isNumber }
-        
-        // Need at least 3 digits for a valid price (e.g. 100 = $1.00)
-        guard numbers.count >= 3 else { return nil }
-        
-        // Convert string to decimal
-        guard let value = Int(numbers) else { return nil }
-        
-        // Move decimal point two places left
+        guard numbers.count >= 3, let value = Int(numbers) else { return nil }
         return Double(value) / 100.0
     }
     
-    /// Validate EAN-13 barcode format
-    /// - Parameter code: Scanned barcode string
-    /// - Returns: True if valid EAN-13 format
     private func isValidEAN(_ code: String) -> Bool {
-        let cleaned = code.filter { $0.isNumber }
-        return cleaned.count == 13
+        code.filter { $0.isNumber }.count == 13
     }
     
-    /// Update current product with scanned data
     private func updateCurrentProduct() {
-        currentProduct = ProductData(name: tempName, price: tempPrice, barcode: tempBarcode , storeID: StoreManager.shared.currentStoreID ?? 0)
+        currentProduct = ProductData(
+            name: scannedName ?? "",
+            price: scannedPrice ?? 0,
+            barcode: scannedBarcode ?? "",
+            storeID: StoreManager.shared.currentStoreID ?? 0
+        )
     }
     
-    /// Finalize product scanning and add to history
     private func finalizeProduct() {
-        let product = ProductData(name: tempName, price: tempPrice, barcode: tempBarcode, storeID: StoreManager.shared.currentStoreID ?? 0)
-        currentProduct = product
+        guard let name = scannedName,
+              let price = scannedPrice,
+              let barcode = scannedBarcode,
+              let storeID = StoreManager.shared.currentStoreID
+        else {
+            resetScan()
+            return
+        }
+        
+        currentProduct = ProductData(
+            name: name,
+            price: price,
+            barcode: barcode,
+            storeID: storeID
+        )
         currentStep = .complete
     }
     
-    /// Reset scanner for new product
     func resetScan() {
         currentStep = .name
-        tempName = ""
-        tempPrice = 0.0
-        tempBarcode = ""
+        scannedName = nil
+        scannedPrice = nil
+        scannedBarcode = nil
         currentProduct = nil
     }
 }
