@@ -51,6 +51,9 @@ struct StoreSelectionView: View {
                     if stores.isEmpty {
                         self.errorMessage = "No grocery stores found nearby"
                     }
+                case .failure(let error as CLError) where error.code == .denied:
+                    self.errorMessage = "Location access is denied. Please enable it in settings."
+                    self.showAlert = true
                 case .failure(let error):
                     print(error)
                     self.errorMessage = error.localizedDescription

@@ -23,34 +23,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func searchNearbyStores(completion: @escaping (Result<[StoreWithDistanceItem], Error>) -> Void) {
         searchCompletion = completion
-        locationManager.requestLocation()
-    }
-    
-    
-    func addressString(from mapItem: MKMapItem) -> String {
-        let placemark = mapItem.placemark
-        
-        // Create an array to store the address components
-        var addressComponents: [String] = []
-        
-        // Add street number and name if available
-        if let streetNumber = placemark.thoroughfare, let streetName = placemark.subThoroughfare {
-            addressComponents.append("\(streetNumber) \(streetName)")
-        } else if let streetName = placemark.thoroughfare {
-            addressComponents.append(streetName)
+        let status = locationManager.authorizationStatus
+        switch status {
+        case .notDetermined:
+            locationManager.requestWhenInUseAuthorization()
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager.requestLocation()
+        case .denied, .restricted:
+            completion(.failure(CLError(.denied)))
+        @unknown default:
+            completion(.failure(CLError(.locationUnknown)))
         }
-        
-        // Add locality (city) if available
-        if let locality = placemark.locality {
-            addressComponents.append(locality)
-        }
-        
-        // Join the address components with commas
-        return addressComponents.joined(separator: ", ")
-    }
-    
-    static func storeNameIsValid(name: String) -> Bool {
-        return name.lowercased().contains(/^(ica|hemköp|konsum|willys|lidl)/)
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -59,12 +42,11 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             return
         }
         
-        
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = "grocery store"
         request.region = MKCoordinateRegion(
             center: location.coordinate,
-            span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03)
+            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
         )
         
         let search = MKLocalSearch(request: request)
@@ -75,25 +57,26 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             }
             
             let stores = response?.mapItems.compactMap { item -> StoreWithDistanceItem? in
-                if let name = item.name {
-                    
-                    if !LocationManager.storeNameIsValid(name: name) { return nil }
-                    
-                    let storeLocation = CLLocation(latitude: item.placemark.coordinate.latitude,
-                                                   longitude: item.placemark.coordinate.longitude)
-                    return StoreWithDistanceItem(
-                        address: self?.addressString(from: item) ?? "",
-                        name: name,
-                        street_number: Int(item.placemark.subThoroughfare ?? "") ?? 0,
-                        street_name: item.placemark.thoroughfare ?? "",
-                        city: item.placemark.locality ?? "",
-                        country_code: item.placemark.countryCode ?? "",
-                        coordinate: item.placemark.coordinate,
-                        distance: location.distance(from: storeLocation)
-                    )
-                } else { return nil }
+                guard let name = item.name else { return nil }
+                if !storeNameIsValid(name: name) { return nil }
+                let storeLocation = CLLocation(latitude: item.placemark.coordinate.latitude,
+                                               longitude: item.placemark.coordinate.longitude)
+                let optional_string_to_integer = {(optional : String?) -> Int in
+                    guard let inner = optional, let number = Int(inner) else { return 0 }
+                    return number
+                };
+                return StoreWithDistanceItem(
+                    address: addressString(mapItem: item),
+                    name: name,
+                    street_number: optional_string_to_integer(item.placemark.subThoroughfare),
+                    street_name: item.placemark.thoroughfare ?? "",
+                    city: item.placemark.locality ?? "",
+                    country_code: item.placemark.countryCode ?? "",
+                    coordinate: item.placemark.coordinate,
+                    distance: location.distance(from: storeLocation)
+                )
             }.sorted {
-                $0.distance.isLess(than: $1.distance)
+                $0.distance < $1.distance
             }
             ?? []
             
@@ -160,4 +143,30 @@ struct StoreListView: View {
             }
         }
     }
+}
+
+func addressString(mapItem: MKMapItem) -> String {
+    let placemark = mapItem.placemark
+    
+    // Create an array to store the address components
+    var addressComponents: [String] = []
+    
+    // Add street number and name if available
+    if let streetNumber = placemark.thoroughfare, let streetName = placemark.subThoroughfare {
+        addressComponents.append("\(streetNumber) \(streetName)")
+    } else if let streetName = placemark.thoroughfare {
+        addressComponents.append(streetName)
+    }
+    
+    // Add locality (city) if available
+    if let locality = placemark.locality {
+        addressComponents.append(locality)
+    }
+    
+    // Join the address components with commas
+    return addressComponents.joined(separator: ", ")
+}
+
+func storeNameIsValid(name: String) -> Bool {
+    return name.lowercased().contains(/^(ica|hemköp|konsum|willys|lidl)/)
 }
