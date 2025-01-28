@@ -23,7 +23,7 @@ class ScannerModel: ObservableObject {
     }
     
     private func handleNameScan(_ text: String) {
-        scannedName = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        scannedName = extractProductName(from: text)
         currentStep = .price
         updateCurrentProduct()
     }
@@ -39,6 +39,14 @@ class ScannerModel: ObservableObject {
         guard isValidEAN(text) else { return }
         scannedBarcode = text
         finalizeProduct()
+    }
+    
+    private func extractProductName(from text: String) -> String {
+        // Matches any number of consecutive space-separated uppercase-only words
+        let re = /\b[A-Z]+\b(?:\s+[A-Z]+)+\b/
+        if let match = text.firstMatch(of: re) {
+            return String(text[match.range])
+        } else { return text }
     }
     
     private func extractPrice(from text: String) -> Double? {
