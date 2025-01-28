@@ -1,0 +1,11 @@
+//
+//  Config.xcconfig
+//  GroceryTracker
+//
+//  Created by Gustav Karlsson on 2025-01-28.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+BACKEND_BASE_URL = example.com

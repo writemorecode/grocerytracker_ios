@@ -43,6 +43,7 @@
 		6F4244B82D43DF3E00E75982 /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
 		6F4244BA2D43E03500E75982 /* StoreSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreSelectionView.swift; sourceTree = "<group>"; };
 		6F4244BC2D43E04800E75982 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		6F6DB1702D491CBB0009F51B /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		6F870A032D1C46F5003807C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		6F870A042D1C47C7003807C3 /* GroceryTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GroceryTracker.entitlements; sourceTree = "<group>"; };
 		6F870A052D1C4B7C003807C3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -111,6 +112,7 @@
 				6F9ABFC92D161ED500BC0E96 /* GroceryTrackerApp.swift */,
 				6F4244BA2D43E03500E75982 /* StoreSelectionView.swift */,
 				6F4244BC2D43E04800E75982 /* LocationManager.swift */,
+				6F6DB1702D491CBB0009F51B /* Config.xcconfig */,
 				6F4244B82D43DF3E00E75982 /* StoreManager.swift */,
 				6FCDA6B52D2B063A00C0D017 /* ProductData.swift */,
 				6FCDA6B62D2B063A00C0D017 /* ProductPreview.swift */,
@@ -372,6 +374,7 @@
 		};
 		6F9ABFE92D161ED600BC0E96 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6F6DB1702D491CBB0009F51B /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -428,6 +431,7 @@
 		};
 		6F9ABFEB2D161ED600BC0E96 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6F6DB1702D491CBB0009F51B /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

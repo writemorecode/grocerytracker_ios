@@ -1,11 +1,3 @@
-//
-//  NetworkManager.swift
-//  GroceryTracker
-//
-//  Created by Gustav Karlsson on 2025-01-18.
-//
-
-// NetworkManager.swift
 import Foundation
 
 enum NetworkError: Error {
@@ -17,10 +9,23 @@ enum NetworkError: Error {
 
 class NetworkManager {
     static let shared = NetworkManager()
-    private let baseURL = "http://192.168.0.6:3000";
+    private let baseURL: URL;
+    
+    init() {
+        guard let urlString = Bundle.main.object(forInfoDictionaryKey: "BackendBaseURL") as? String else {
+            fatalError("Backend URL environment variable not configured.")
+        }
+        if urlString.isEmpty {
+            fatalError("Backend URL environment variable was empty.")
+        }
+        guard let url = URL(string: urlString) else {
+            fatalError("Backend URL environment variable was invalid.")
+        }
+        self.baseURL = url
+    }
     
     private func performPostRequest<T: Encodable>(endpoint: String, body: T) async throws -> Data {
-        guard let url = URL(string: "\(baseURL)\(endpoint)") else {
+        guard let url = URL(string: endpoint, relativeTo: baseURL) else {
             throw NetworkError.invalidURL
         }
         
