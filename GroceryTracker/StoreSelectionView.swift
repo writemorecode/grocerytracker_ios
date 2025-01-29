@@ -11,15 +11,18 @@ import MapKit
 
 struct StoreSelectionView: View {
     @StateObject private var locationManager = LocationManager()
-    @State private var isLoading = false
+    @State private var isSearchingForStores = false
+    @State private var isUploadingStoreData = false
     @State private var errorMessage: String?
     @State private var showAlert = false
     
     var body: some View {
         NavigationView {
             Group {
-                if isLoading {
+                if isSearchingForStores {
                     ProgressView("Searching for nearby stores...")
+                } else if isUploadingStoreData {
+                    ProgressView("Uploading store data...")
                 } else if let errorMessage {
                     ErrorView(message: errorMessage, onRetry: loadNearbyStores)
                 } else if locationManager.stores.isEmpty {
@@ -40,11 +43,11 @@ struct StoreSelectionView: View {
     }
     
     private func loadNearbyStores() {
-        isLoading = true
+        isSearchingForStores = true
         errorMessage = nil
         locationManager.searchNearbyStores { [self] result in
             DispatchQueue.main.async {
-                self.isLoading = false
+                self.isSearchingForStores = false
                 switch result {
                 case .success(let stores):
                     self.locationManager.stores = stores;
@@ -64,7 +67,7 @@ struct StoreSelectionView: View {
     }
     
     private func selectStore(_ store: StoreWithDistanceItem) {
-        isLoading = true
+        isUploadingStoreData = true
         
         Task {
             do {
@@ -75,13 +78,13 @@ struct StoreSelectionView: View {
                 
                 await MainActor.run {
                     StoreManager.shared.setSelectedStore(id: storeID, name: store.name)
-                    isLoading = false
+                    isUploadingStoreData = false
                 }
             } catch {
                 await MainActor.run {
                     errorMessage = error.localizedDescription
                     showAlert = true
-                    isLoading = false
+                    isUploadingStoreData = false
                 }
             }
         }
