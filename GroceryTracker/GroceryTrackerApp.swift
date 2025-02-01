@@ -11,6 +11,7 @@ struct GroceryTrackerApp: App {
             } else {
                 StoreSelectionView()
             }
+            
         }
         .environmentObject(storeManager)
     }
