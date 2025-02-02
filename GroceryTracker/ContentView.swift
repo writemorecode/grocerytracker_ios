@@ -15,17 +15,20 @@ struct ContentView: View {
             VStack {
                 Spacer()
                 
-                if !cameraManager.detectedText.isEmpty {
-                    Text(cameraManager.detectedText)
-                        .padding()
-                        .background(Color.black.opacity(0.7))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .padding()
-                        .transition(.opacity)
-                        .animation(.easeInOut, value: cameraManager.detectedText)
+                if let product = cameraManager.parsedProduct {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Name: \(product.name)")
+                        let priceString = product.price.formatted()
+                        let currencySymbol = Locale.current.currencySymbol ?? ""
+                        Text("Price: \(priceString) \(currencySymbol)")
+                        Text("Barcode: \(product.barcode)")
+                    }
+                    .padding()
+                    .background(Color.black)
+                    .cornerRadius(8)
+                    .padding(.horizontal)
                 }
-                
+
                 Button(action: {
                     cameraManager.captureText()
                 }) {
