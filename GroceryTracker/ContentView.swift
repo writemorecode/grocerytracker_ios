@@ -1,91 +1,62 @@
-// ContentView.swift
+import AVFoundation
 import SwiftUI
-import VisionKit
+import Vision
 
-/// Main view of the application
 struct ContentView: View {
-    // StateObject ensures the model persists across view updates
-    @StateObject private var scannerModel = ScannerModel()
-    @State private var isUploading = false
-    @State private var showAlert = false
-    @State private var alertMessage = ""
-    
+    @StateObject var viewModel = ScannerViewModel()
+
     var body: some View {
-        NavigationStack {
-            VStack {
-                // Display current scanning instruction
-                Text(scannerModel.currentStep.instruction)
-                    .font(.headline)
-                    .padding()
-                
-                // Show preview of currently scanned product
-                if let product = scannerModel.currentProduct {
-                    ProductPreview(product: product)
+        VStack(spacing: 20) {
+            // Camera preview view
+            CameraView(viewModel: viewModel)
+                .frame(height: 400)
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.gray, lineWidth: 1)
+                )
+                .padding()
+
+            // Buttons to trigger scanning steps
+            HStack(spacing: 20) {
+                Button("Scan Shelf Label") {
+                    // Trigger text recognition on the next frame.
+                    viewModel.scanningMode = .name
                 }
-                
-                // Live Text scanner view if supported by device
-                if DataScannerViewController.isSupported {
-                    ScannerView(scannerModel: scannerModel)
-                        .frame(maxHeight: 400)
-                } else {
-                    Text("Live Text not supported")
+                .buttonStyle(.borderedProminent)
+
+                Button("Scan Price") {
+                    // Trigger text recognition on the next frame.
+                    viewModel.scanningMode = .price
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button("Scan Barcode") {
+                    // Trigger barcode detection on the next frame.
+                    viewModel.scanningMode = .barcode
+                }
+                .buttonStyle(.borderedProminent)
+            }
+
+            // Display the scanning results
+            VStack(alignment: .leading, spacing: 10) {
+                if let productName = viewModel.productName {
+                    Text("Product Name: \(productName)")
+                }
+                if let price = viewModel.price {
+                    Text("Price: \(price)")
+                }
+                if let barcode = viewModel.barcode {
+                    Text("Barcode: \(barcode)")
+                }
+                if let errorMessage = viewModel.errorMessage {
+                    Text("Error: \(errorMessage)")
                         .foregroundColor(.red)
                 }
-                
-                // Reset button appears after scan completion
-                if scannerModel.currentStep == .complete {
-                    Button(action: uploadProduct) {
-                        HStack {
-                            if isUploading {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            }
-                            Text("Upload Product Data")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                    }
-                    .disabled(isUploading)
-                    .padding()
-                    
-                }
             }
-            
-        }
-        .navigationTitle("Product Scanner")
-    }
-    
-    private func uploadProduct() {
-        guard let product = scannerModel.currentProduct else { return }
-        
-        isUploading = true
-        
-        Task {
-            do {
-                try await NetworkManager.shared.uploadProduct(product)
-                await MainActor.run {
-                    alertMessage = "Successfully uploaded product data"
-                    showAlert = true
-                    isUploading = false
-                }
-            } catch NetworkError.httpError(let code) {
-                await MainActor.run {
-                    alertMessage = "Upload failed with status code: \(code)"
-                    showAlert = true
-                    isUploading = false
-                }
-            } catch {
-                await MainActor.run {
-                    alertMessage = "Upload failed: \(error.localizedDescription)"
-                    showAlert = true
-                    isUploading = false
-                }
-            }
+            .padding()
+
+            Spacer()
         }
     }
 }
-
-

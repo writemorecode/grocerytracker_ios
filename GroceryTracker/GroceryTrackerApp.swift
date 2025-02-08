@@ -6,7 +6,8 @@ struct GroceryTrackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if storeManager.currentStoreID != nil {
+            //if storeManager.currentStoreID != nil {
+            if true {
                 ContentView()
             } else {
                 StoreSelectionView()
