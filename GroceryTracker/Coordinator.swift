@@ -156,17 +156,19 @@ extension Coordinator {
     }
 
     private func extractProductName(from lines: [String]) -> String {
-        lines
+        let trimmedLines =
+            lines
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+        let linesWithoutLowercase =
+            trimmedLines
             .filter {
-                $0.rangeOfCharacter(
-                    from:
-                        CharacterSet.decimalDigits.union(
-                            CharacterSet.lowercaseLetters
-                        )
-                ) == nil
+                $0.rangeOfCharacter(from: CharacterSet.lowercaseLetters) == nil
             }
-            .joined(separator: " ")
+        let linesWithoutNumbers = linesWithoutLowercase.filter {
+            $0.allSatisfy { !$0.isWholeNumber }
+        }
+        let productName = linesWithoutNumbers.joined(separator: " ")
+        return productName
     }
 
     private func extractPrice(from line: String) -> String? {
