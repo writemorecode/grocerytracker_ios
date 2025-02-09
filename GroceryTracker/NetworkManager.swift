@@ -51,7 +51,7 @@ class NetworkManager {
     }
     
     func uploadProduct(_ product: ProductData) async throws {
-        _ = try await performPostRequest(endpoint: "/products", body: product)
+        _ = try await performPostRequest(endpoint: "/prices", body: product)
     }
     
     struct StoreResponse: Decodable {
