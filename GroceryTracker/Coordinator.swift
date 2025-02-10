@@ -168,22 +168,14 @@ extension Coordinator {
         return ""
     }
 
-    private func extractPrice(from line: String) -> String? {
-        let pricePattern = "([€$]?\\s?\\d+[.,]?\\d{1,2})"
-        guard let regex = try? NSRegularExpression(pattern: pricePattern) else {
-            return nil
+    private func extractPrice(from text: String) -> Decimal? {
+        let p = /([€$]?\\s?\\d+[.,]?\\d{1,2})/
+        if let match = text.firstMatch(of: p) {
+            let text = String(text[match.range])
+            if let price = Decimal(string: text) {
+                return price / 100
+            }
         }
-
-        let nsString = line as NSString
-        let matches = regex.matches(
-            in: line, range: NSRange(location: 0, length: nsString.length))
-
-        if let match = matches.first,
-            let range = Range(match.range, in: line)
-        {
-            return String(line[range])
-        }
-
         return nil
     }
 

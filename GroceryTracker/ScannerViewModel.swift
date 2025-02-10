@@ -14,7 +14,7 @@ class ScannerViewModel: ObservableObject {
 
     @Published var errorMessage: String? = nil
     @Published var productName: String? = nil
-    @Published var price: String? = nil
+    @Published var price: Decimal? = nil
     @Published var barcode: String? = nil
     @Published var scanningMode: ScanningMode = .none
 }
