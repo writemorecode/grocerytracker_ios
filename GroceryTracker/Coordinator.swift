@@ -101,7 +101,11 @@ extension Coordinator {
                 observation.topCandidates(1).first?.string
             }
 
-            completion(recognizedText.joined(separator: " "))
+            let text = recognizedText.joined(separator: " ")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .replacingOccurrences(of: "\n", with: "")
+            completion(text)
+
             self.isProcessing = false
         }
 
@@ -122,7 +126,7 @@ extension Coordinator {
     private func processProductName(from sampleBuffer: CMSampleBuffer) {
         processTextRecognition(from: sampleBuffer) { [weak self] text in
             guard let self = self else { return }
-            let productName = self.extractProductName(from: [text])
+            let productName = self.extractProductName(from: text)
             DispatchQueue.main.async {
                 self.viewModel.productName = productName
                 self.viewModel.scanningMode = .none
@@ -155,20 +159,13 @@ extension Coordinator {
         self.isProcessing = false
     }
 
-    private func extractProductName(from lines: [String]) -> String {
-        let trimmedLines =
-            lines
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-        let linesWithoutLowercase =
-            trimmedLines
-            .filter {
-                $0.rangeOfCharacter(from: CharacterSet.lowercaseLetters) == nil
-            }
-        let linesWithoutNumbers = linesWithoutLowercase.filter {
-            $0.allSatisfy { !$0.isWholeNumber }
+    private func extractProductName(from text: String) -> String {
+        let pattern = /([A-Ö, ]+(?:\d+[GP])?[A-Ö, ]+)/
+        if let match = text.firstMatch(of: pattern) {
+            let name = String(text[match.range])
+            return name
         }
-        let productName = linesWithoutNumbers.joined(separator: " ")
-        return productName
+        return ""
     }
 
     private func extractPrice(from line: String) -> String? {
