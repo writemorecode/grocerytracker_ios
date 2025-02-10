@@ -126,7 +126,7 @@ extension Coordinator {
     private func processProductName(from sampleBuffer: CMSampleBuffer) {
         processTextRecognition(from: sampleBuffer) { [weak self] text in
             guard let self = self else { return }
-            if let productName = self.extractProductName(from: text) {
+            if let productName = extractProductName(from: text) {
                 DispatchQueue.main.async {
                     self.viewModel.productName = productName
                     self.viewModel.scanningMode = .none
@@ -140,7 +140,7 @@ extension Coordinator {
     private func processPrice(from sampleBuffer: CMSampleBuffer) {
         processTextRecognition(from: sampleBuffer) { [weak self] text in
             guard let self = self else { return }
-            if let price = self.extractPrice(from: text) {
+            if let price = extractPrice(from: text) {
                 DispatchQueue.main.async {
                     self.viewModel.price = price
                     self.viewModel.scanningMode = .none
@@ -162,26 +162,6 @@ extension Coordinator {
             self.viewModel.scanningMode = .none
         }
         self.isProcessing = false
-    }
-
-    private func extractProductName(from text: String) -> String? {
-        let pattern = /([A-Ö, ]+(?:\d+[GP])?[A-Ö, ]+)/
-        if let match = text.firstMatch(of: pattern) {
-            let name = String(text[match.range])
-            return name
-        }
-        return nil
-    }
-
-    private func extractPrice(from text: String) -> Decimal? {
-        let p = /([€$]?\\s?\\d+[.,]?\\d{1,2})/
-        if let match = text.firstMatch(of: p) {
-            let text = String(text[match.range])
-            if let price = Decimal(string: text) {
-                return price / 100
-            }
-        }
-        return nil
     }
 
     private func processBarcode(from sampleBuffer: CMSampleBuffer) {
