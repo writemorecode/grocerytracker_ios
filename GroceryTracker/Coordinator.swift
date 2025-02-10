@@ -141,6 +141,7 @@ extension Coordinator {
                 DispatchQueue.main.async {
                     self.viewModel.price = price
                     self.viewModel.scanningMode = .none
+                    self.maybeUploadScannedProduct()
                 }
             } else {
                 DispatchQueue.main.async {
@@ -195,6 +196,7 @@ extension Coordinator {
                         DispatchQueue.main.async {
                             self.viewModel.barcode = payload
                             self.viewModel.scanningMode = .none
+                            self.maybeUploadScannedProduct()
                         }
                         self.isProcessing = false
                         return
@@ -217,6 +219,26 @@ extension Coordinator {
             try handler.perform([request])
         } catch {
             handleTextRecognitionError(error)
+        }
+    }
+
+    private func maybeUploadScannedProduct() {
+        guard let name = viewModel.productName,
+            let barcode = viewModel.barcode,
+            let price = viewModel.price,
+            let storeID = StoreManager.shared.currentStoreID
+        else {
+            return
+        }
+        let product = ProductData(
+            name: name, price: price, barcode: barcode, storeID: storeID)
+        Task {
+            do {
+                try await NetworkManager.shared.uploadProduct(product)
+            } catch {
+                self.viewModel.errorMessage =
+                    "Upload failed: \(error.localizedDescription)"
+            }
         }
     }
 }
