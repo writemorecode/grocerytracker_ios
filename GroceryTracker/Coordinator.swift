@@ -126,10 +126,13 @@ extension Coordinator {
     private func processProductName(from sampleBuffer: CMSampleBuffer) {
         processTextRecognition(from: sampleBuffer) { [weak self] text in
             guard let self = self else { return }
-            let productName = self.extractProductName(from: text)
-            DispatchQueue.main.async {
-                self.viewModel.productName = productName
-                self.viewModel.scanningMode = .none
+            if let productName = self.extractProductName(from: text) {
+                DispatchQueue.main.async {
+                    self.viewModel.productName = productName
+                    self.viewModel.scanningMode = .none
+                    self.viewModel.errorMessage = nil
+                    self.maybeUploadScannedProduct()
+                }
             }
         }
     }
@@ -141,6 +144,7 @@ extension Coordinator {
                 DispatchQueue.main.async {
                     self.viewModel.price = price
                     self.viewModel.scanningMode = .none
+                    self.viewModel.errorMessage = nil
                     self.maybeUploadScannedProduct()
                 }
             } else {
@@ -160,13 +164,13 @@ extension Coordinator {
         self.isProcessing = false
     }
 
-    private func extractProductName(from text: String) -> String {
+    private func extractProductName(from text: String) -> String? {
         let pattern = /([A-Ö, ]+(?:\d+[GP])?[A-Ö, ]+)/
         if let match = text.firstMatch(of: pattern) {
             let name = String(text[match.range])
             return name
         }
-        return ""
+        return nil
     }
 
     private func extractPrice(from text: String) -> Decimal? {
@@ -196,6 +200,7 @@ extension Coordinator {
                         DispatchQueue.main.async {
                             self.viewModel.barcode = payload
                             self.viewModel.scanningMode = .none
+                            self.viewModel.errorMessage = nil
                             self.maybeUploadScannedProduct()
                         }
                         self.isProcessing = false

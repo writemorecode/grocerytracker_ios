@@ -206,6 +206,7 @@
 					};
 					6F9ABFD52D161ED600BC0E96 = {
 						CreatedOnToolsVersion = 15.4;
+						LastSwiftMigration = 1620;
 						TestTargetID = 6F9ABFC52D161ED500BC0E96;
 					};
 					6F9ABFDF2D161ED600BC0E96 = {
@@ -266,7 +267,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				6FFDB0242D3C5BE2000E60E8 /* NetworkManager.swift in Sources */,
-				6FB9B9902D4FD9DB00845799 /* ProductLabelParser.swift in Sources */,
 				6F4244BB2D43E03500E75982 /* StoreSelectionView.swift in Sources */,
 				6F92B89C2D57F326006AF3A5 /* CameraPreviewView.swift in Sources */,
 				6F4244BD2D43E04800E75982 /* LocationManager.swift in Sources */,
@@ -509,16 +509,18 @@
 		6F9ABFEE2D161ED600BC0E96 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2222D8UU9N;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = writemorecode.GroceryTrackerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GroceryTracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GroceryTracker";
@@ -528,10 +530,11 @@
 		6F9ABFEF2D161ED600BC0E96 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2222D8UU9N;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				MARKETING_VERSION = 1.0;
@@ -547,9 +550,9 @@
 		6F9ABFF12D161ED600BC0E96 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2222D8UU9N;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = writemorecode.GroceryTrackerUITests;
@@ -564,9 +567,9 @@
 		6F9ABFF22D161ED600BC0E96 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2222D8UU9N;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = writemorecode.GroceryTrackerUITests;
