@@ -17,4 +17,6 @@ class ScannerViewModel: ObservableObject {
     @Published var price: Decimal? = nil
     @Published var barcode: String? = nil
     @Published var scanningMode: ScanningMode = .none
+    @Published var recentPrices: [Price]?
+    @Published var showRecentPrices = false
 }

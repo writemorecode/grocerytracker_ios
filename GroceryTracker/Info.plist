@@ -2,25 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>BackendBaseURL</key>
-    <string>http://$(BACKEND_BASE_URL)</string>
-    
+	<key>BackendBaseURL</key>
+	<string>http://$(BACKEND_BASE_URL)</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Need camera to scan things.</string>
-    
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Need location access to find nearby stores</string>
-    
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Required to connect to local backend service</string>
-    
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>192.168.108.204</key>
+			<key>192.168.108.114</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>
 				<true/>

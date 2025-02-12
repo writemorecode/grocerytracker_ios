@@ -131,7 +131,12 @@ extension Coordinator {
                     self.viewModel.productName = productName
                     self.viewModel.scanningMode = .none
                     self.viewModel.errorMessage = nil
-                    self.maybeUploadScannedProduct()
+                    do {
+                        try self.maybeUploadScannedProduct()
+                    } catch {
+                        self.viewModel.errorMessage =
+                            "Error: \(error.localizedDescription)"
+                    }
                 }
             }
         }
@@ -145,7 +150,13 @@ extension Coordinator {
                     self.viewModel.price = price
                     self.viewModel.scanningMode = .none
                     self.viewModel.errorMessage = nil
-                    self.maybeUploadScannedProduct()
+                    self.viewModel.errorMessage = nil
+                    do {
+                        try self.maybeUploadScannedProduct()
+                    } catch {
+                        self.viewModel.errorMessage =
+                            "Error: \(error.localizedDescription)"
+                    }
                 }
             } else {
                 DispatchQueue.main.async {
@@ -181,7 +192,12 @@ extension Coordinator {
                             self.viewModel.barcode = payload
                             self.viewModel.scanningMode = .none
                             self.viewModel.errorMessage = nil
-                            self.maybeUploadScannedProduct()
+                            do {
+                                try self.maybeUploadScannedProduct()
+                            } catch {
+                                self.viewModel.errorMessage =
+                                    "Error: \(error.localizedDescription)"
+                            }
                         }
                         self.isProcessing = false
                         return
@@ -207,22 +223,31 @@ extension Coordinator {
         }
     }
 
-    private func maybeUploadScannedProduct() {
+    private func maybeUploadScannedProduct() throws {
         guard let name = viewModel.productName,
             let barcode = viewModel.barcode,
             let price = viewModel.price,
-            let storeID = StoreManager.shared.currentStoreID
+            let storeID = StoreManager.shared.currentStoreID,
+            let coordinate = StoreManager.shared.currentStoreCoordinate
         else {
             return
         }
         let product = ProductData(
-            name: name, price: price, barcode: barcode, storeID: storeID)
+            name: name, price: price, barcode: barcode, storeID: storeID,
+            latitude: coordinate.latitude, longitude: coordinate.longitude
+        )
         Task {
             do {
-                try await NetworkManager.shared.uploadProduct(product)
+                let response = try await NetworkManager.shared.uploadProduct(product)
+                DispatchQueue.main.async {
+                    self.viewModel.recentPrices = response.prices
+                    self.viewModel.showRecentPrices = true
+                }
             } catch {
-                self.viewModel.errorMessage =
-                    "Upload failed: \(error.localizedDescription)"
+                DispatchQueue.main.async {
+                    self.viewModel.errorMessage =
+                        "Error: \(error.localizedDescription)"
+                }
             }
         }
     }

@@ -58,5 +58,10 @@ struct ContentView: View {
 
             Spacer()
         }
+        .sheet(isPresented: $viewModel.showRecentPrices) {
+            if let recentPrices = viewModel.recentPrices {
+                RecentPricesView(prices: recentPrices)
+            }
+        }
     }
 }
