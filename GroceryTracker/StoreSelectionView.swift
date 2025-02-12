@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import SwiftUI
 import MapKit
+import SwiftUI
 
 struct StoreSelectionView: View {
     @StateObject private var locationManager = LocationManager()
@@ -15,7 +15,7 @@ struct StoreSelectionView: View {
     @State private var isUploadingStoreData = false
     @State private var errorMessage: String?
     @State private var showAlert = false
-    
+
     var body: some View {
         NavigationView {
             Group {
@@ -28,20 +28,21 @@ struct StoreSelectionView: View {
                 } else if locationManager.stores.isEmpty {
                     EmptyStateView(onRetry: loadNearbyStores)
                 } else {
-                    StoreListView(stores: locationManager.stores, onSelect: selectStore)
+                    StoreListView(
+                        stores: locationManager.stores, onSelect: selectStore)
                 }
-                
+
             }
             .navigationTitle("Select Store")
             .alert("Store Selection Error", isPresented: $showAlert) {
-                Button("OK") { }
+                Button("OK") {}
             } message: {
                 Text(errorMessage ?? "Unknown error occurred")
             }
         }
         .onAppear(perform: loadNearbyStores)
     }
-    
+
     private func loadNearbyStores() {
         isSearchingForStores = true
         errorMessage = nil
@@ -50,12 +51,14 @@ struct StoreSelectionView: View {
                 self.isSearchingForStores = false
                 switch result {
                 case .success(let stores):
-                    self.locationManager.stores = stores;
+                    print(stores, self.locationManager.stores)
+                    self.locationManager.stores = stores
                     if stores.isEmpty {
                         self.errorMessage = "No grocery stores found nearby"
                     }
                 case .failure(let error as CLError) where error.code == .denied:
-                    self.errorMessage = "Location access is denied. Please enable it in settings."
+                    self.errorMessage =
+                        "Location access is denied. Please enable it in settings."
                     self.showAlert = true
                 case .failure(let error):
                     print(error)
@@ -65,19 +68,20 @@ struct StoreSelectionView: View {
             }
         }
     }
-    
+
     private func selectStore(_ store: StoreWithDistanceItem) {
         isUploadingStoreData = true
-        
+
         Task {
             do {
                 let storeRecord = StoreRecord(item: store)
                 let storeID = try await NetworkManager.shared.uploadStore(
                     storeRecord
                 )
-                
                 await MainActor.run {
-                    StoreManager.shared.setSelectedStore(id: storeID, name: store.name)
+                    StoreManager.shared.setSelectedStore(
+                        id: storeID, name: store.name,
+                        coordinate: store.coordinate)
                     isUploadingStoreData = false
                 }
             } catch {
@@ -103,7 +107,7 @@ struct StoreWithDistanceItem: Identifiable {
     let distance: CLLocationDistance
 }
 
-struct StoreRecord : Encodable {
+struct StoreRecord: Encodable {
     let name: String
     let street_number: Int
     let street_name: String
@@ -111,7 +115,7 @@ struct StoreRecord : Encodable {
     let country_code: String
     let latitude: Double
     let longitude: Double
-    
+
     init(item: StoreWithDistanceItem) {
         self.name = item.name
         self.street_name = item.street_name

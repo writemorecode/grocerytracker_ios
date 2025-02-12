@@ -81,7 +81,11 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             ?? []
             
             self?.stores = stores;
-            self?.searchCompletion?(.success(stores))
+            if !stores.isEmpty {
+                self?.searchCompletion?(.success(stores))
+            } else {
+                self?.searchCompletion?(.failure(CLError(.locationUnknown)))
+            }
         }
     }
     
