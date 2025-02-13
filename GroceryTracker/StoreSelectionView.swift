@@ -30,7 +30,6 @@ struct StoreSelectionView: View {
                     StoreListView(
                         stores: locationManager.stores, onSelect: selectStore)
                 }
-
             }
             .navigationTitle("Select Store")
         }
@@ -60,19 +59,20 @@ struct StoreSelectionView: View {
         }
     }
 
-    private func selectStore(_ store: StoreWithDistanceItem) {
+    private func selectStore(_ store: Store) {
         isUploadingStoreData = true
 
         Task {
             do {
-                let storeRecord = StoreRecord(item: store)
                 let storeID = try await NetworkManager.shared.uploadStore(
-                    storeRecord
+                    store
                 )
                 await MainActor.run {
                     StoreManager.shared.setSelectedStore(
                         id: storeID, name: store.name,
-                        coordinate: store.coordinate)
+                        coordinate: CLLocationCoordinate2D(
+                            latitude: store.latitude, longitude: store.longitude
+                        ))
                     isUploadingStoreData = false
                 }
             } catch {
@@ -85,34 +85,20 @@ struct StoreSelectionView: View {
     }
 }
 
-struct StoreWithDistanceItem: Identifiable {
+struct Store: Identifiable, Encodable {
     let id = UUID()
     let address: String
     let name: String
-    let street_number: Int
-    let street_name: String
-    let city: String
-    let country_code: String
-    let coordinate: CLLocationCoordinate2D
-    let distance: CLLocationDistance
-}
-
-struct StoreRecord: Encodable {
-    let name: String
-    let street_number: Int
+    let street_number: String
     let street_name: String
     let city: String
     let country_code: String
     let latitude: Double
     let longitude: Double
+    let distance: CLLocationDistance
 
-    init(item: StoreWithDistanceItem) {
-        self.name = item.name
-        self.street_name = item.street_name
-        self.street_number = item.street_number
-        self.city = item.city
-        self.country_code = item.country_code
-        self.latitude = item.coordinate.latitude
-        self.longitude = item.coordinate.longitude
+    private enum CodingKeys: String, CodingKey {
+        case address, name, street_number, street_name, city, country_code,
+            latitude, longitude, distance
     }
 }

@@ -71,7 +71,7 @@ class NetworkManager {
         let id: Int
     }
 
-    func uploadStore(_ store: StoreRecord) async throws -> Int {
+    func uploadStore(_ store: Store) async throws -> Int {
         let response: StoreResponse = try await performPostRequest(
             endpoint: "/stores", body: store)
         return response.id
