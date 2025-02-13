@@ -47,27 +47,32 @@ struct RecentPricesView: View {
                             priceInfo.price.formatted(.currency(code: "SEK"))
                         )
 
-                        Text(
-                            priceInfo.relativePriceChange.formatted(
-                                .percent
-                                    .precision(.fractionLength(2))
-                                    .sign(strategy: .always())
+                        if priceInfo.relativePriceChange != 0 {
+                            Text(
+                                priceInfo.relativePriceChange.formatted(
+                                    .percent
+                                        .precision(.fractionLength(2))
+                                        .sign(strategy: .always())
+                                )
                             )
-                        )
-                        .foregroundStyle(
-                            priceInfo.relativePriceChange >= 0
-                                ? .red : .green
-                        )
-                        Text(
-                            priceInfo.absolutePriceChange.formatted(
-                                .currency(code: "SEK")
-                                    .sign(strategy: .always())
+                            .foregroundStyle(
+                                priceInfo.relativePriceChange >= 0
+                                    ? .red : .green
+                            )
+                        }
 
+                        if priceInfo.absolutePriceChange != 0 {
+                            Text(
+                                priceInfo.absolutePriceChange.formatted(
+                                    .currency(code: "SEK")
+                                        .sign(strategy: .always())
+
+                                )
+                            ).foregroundStyle(
+                                priceInfo.absolutePriceChange >= 0
+                                    ? .red : .green
                             )
-                        ).foregroundStyle(
-                            priceInfo.absolutePriceChange >= 0
-                                ? .red : .green
-                        )
+                        }
                     }
                 }
             }
