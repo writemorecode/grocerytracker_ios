@@ -27,8 +27,10 @@ class NetworkManager {
         self.baseURL = url
     }
 
-    private func performPostRequest<T: Encodable>(endpoint: String, body: T)
-        async throws -> Data
+    private func performPostRequest<T: Encodable, U: Decodable>(
+        endpoint: String, body: T
+    )
+        async throws -> U
     {
         guard let url = URL(string: endpoint, relativeTo: baseURL) else {
             throw NetworkError.invalidURL
@@ -38,7 +40,7 @@ class NetworkManager {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        var encoder = JSONEncoder()
+        let encoder = JSONEncoder()
         let jsonData = try encoder.encode(body)
         request.httpBody = jsonData
 
@@ -52,22 +54,17 @@ class NetworkManager {
             throw NetworkError.httpError(httpResponse.statusCode)
         }
 
-        return data
+        let datefmt = DateFormatter()
+        datefmt.dateFormat = "yyyy-MM-dd"
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(datefmt)
+        let decoded = try decoder.decode(U.self, from: data)
+        return decoded
     }
 
     func uploadProduct(_ product: ProductData) async throws -> PricesResponse {
-        let data = try await performPostRequest(
-            endpoint: "/prices", body: product)
-
-        if let data_str = String(data: data, encoding: .utf8) {
-            print("Raw JSON data: '\(data_str)'")
-        } else {
-            print(data)
-        }
-
-        let decoder = JSONDecoder()
-        let pricesResponse = try decoder.decode(PricesResponse.self, from: data)
-        return pricesResponse
+        return try await performPostRequest(endpoint: "/prices", body: product)
     }
 
     struct StoreResponse: Decodable {
@@ -75,11 +72,8 @@ class NetworkManager {
     }
 
     func uploadStore(_ store: StoreRecord) async throws -> Int {
-        let data = try await performPostRequest(
+        let response: StoreResponse = try await performPostRequest(
             endpoint: "/stores", body: store)
-        var decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        let storeResponse = try decoder.decode(StoreResponse.self, from: data)
-        return storeResponse.id
+        return response.id
     }
 }

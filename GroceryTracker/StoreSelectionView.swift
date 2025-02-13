@@ -51,7 +51,6 @@ struct StoreSelectionView: View {
                 self.isSearchingForStores = false
                 switch result {
                 case .success(let stores):
-                    print(stores, self.locationManager.stores)
                     self.locationManager.stores = stores
                     if stores.isEmpty {
                         self.errorMessage = "No grocery stores found nearby"

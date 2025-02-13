@@ -240,10 +240,11 @@ extension Coordinator {
             do {
                 let response = try await NetworkManager.shared.uploadProduct(product)
                 DispatchQueue.main.async {
-                    self.viewModel.recentPrices = response.prices
+                    self.viewModel.recentPrices = response
                     self.viewModel.showRecentPrices = true
                 }
             } catch {
+                print("ERROR UPLOADING PRODUCT: \(error.localizedDescription)")
                 DispatchQueue.main.async {
                     self.viewModel.errorMessage =
                         "Error: \(error.localizedDescription)"

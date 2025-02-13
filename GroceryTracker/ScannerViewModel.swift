@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 class ScannerViewModel: ObservableObject {
     enum ScanningMode {
@@ -17,6 +18,6 @@ class ScannerViewModel: ObservableObject {
     @Published var price: Decimal? = nil
     @Published var barcode: String? = nil
     @Published var scanningMode: ScanningMode = .none
-    @Published var recentPrices: [Price]?
+    @Published var recentPrices: PricesResponse?
     @Published var showRecentPrices = false
 }
