@@ -20,4 +20,11 @@ class ScannerViewModel: ObservableObject {
     @Published var scanningMode: ScanningMode = .none
     @Published var recentPrices: PricesResponse?
     @Published var showRecentPrices = false
+    
+    func reset() {
+        productName = nil
+        price = nil
+        barcode = nil
+    }
 }
+

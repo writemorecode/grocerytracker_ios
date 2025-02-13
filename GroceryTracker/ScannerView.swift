@@ -63,7 +63,12 @@ struct ScannerView: View {
 
             Spacer()
         }
-        .sheet(isPresented: $viewModel.showRecentPrices) {
+        .sheet(
+            isPresented: $viewModel.showRecentPrices,
+            onDismiss: {
+                viewModel.reset()
+            }
+        ) {
             if let recentPrices = viewModel.recentPrices {
                 RecentPricesView(prices: recentPrices)
             }
