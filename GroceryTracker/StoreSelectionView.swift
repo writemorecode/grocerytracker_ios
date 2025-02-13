@@ -14,7 +14,6 @@ struct StoreSelectionView: View {
     @State private var isSearchingForStores = false
     @State private var isUploadingStoreData = false
     @State private var errorMessage: String?
-    @State private var showAlert = false
 
     var body: some View {
         NavigationView {
@@ -34,11 +33,6 @@ struct StoreSelectionView: View {
 
             }
             .navigationTitle("Select Store")
-            .alert("Store Selection Error", isPresented: $showAlert) {
-                Button("OK") {}
-            } message: {
-                Text(errorMessage ?? "Unknown error occurred")
-            }
         }
         .onAppear(perform: loadNearbyStores)
     }
@@ -58,11 +52,9 @@ struct StoreSelectionView: View {
                 case .failure(let error as CLError) where error.code == .denied:
                     self.errorMessage =
                         "Location access is denied. Please enable it in settings."
-                    self.showAlert = true
                 case .failure(let error):
                     print(error)
                     self.errorMessage = error.localizedDescription
-                    self.showAlert = true
                 }
             }
         }
@@ -86,7 +78,6 @@ struct StoreSelectionView: View {
             } catch {
                 await MainActor.run {
                     errorMessage = error.localizedDescription
-                    showAlert = true
                     isUploadingStoreData = false
                 }
             }
