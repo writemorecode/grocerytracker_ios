@@ -49,7 +49,7 @@ struct ScannerView: View {
                     Text("Product Name: \(productName)")
                 }
                 if let price = viewModel.price {
-                    Text("Price: \(price)")
+                    Text("Price: \(price.formatted(.currency(code: "SEK")))")
                 }
                 if let barcode = viewModel.barcode {
                     Text("Barcode: \(barcode)")

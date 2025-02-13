@@ -3,9 +3,9 @@ import SwiftUI
 struct Price: Identifiable, Decodable {
     let id = UUID()
     let name: String
-    let price: Double
-    let absolutePriceChange: Double
-    let relativePriceChange: Double
+    let price: Decimal
+    let absolutePriceChange: Decimal
+    let relativePriceChange: Decimal
 
     let storeName: String
     let date: Date
@@ -19,40 +19,10 @@ struct Price: Identifiable, Decodable {
         case date
     }
 
-    private func formatNumberAsCurrency(_ number: Double) -> String? {
-        let fmt = NumberFormatter()
-        fmt.locale = Locale.current
-        fmt.numberStyle = .currency
-        let number = NSNumber(value: price)
-        return fmt.string(from: number)
-    }
-
     func printDate() -> String {
         let fmt = RelativeDateTimeFormatter()
         fmt.dateTimeStyle = .numeric
         return fmt.localizedString(for: date, relativeTo: Date.now)
-    }
-
-    func printPrice() -> String {
-        return formatNumberAsCurrency(price) ?? ""
-    }
-
-    func printAbsolutePriceChange() -> String {
-        let fmt = NumberFormatter()
-        fmt.numberStyle = .currency
-        fmt.positivePrefix = "+"
-        fmt.negativePrefix = "-"
-        let number = NSNumber(value: absolutePriceChange)
-        let currencyString = fmt.string(from: number)
-        return currencyString ?? ""
-    }
-    func printRelativePriceChange() -> String {
-        let fmt = NumberFormatter()
-        fmt.positivePrefix = "+"
-        fmt.negativePrefix = "-"
-        fmt.numberStyle = .percent
-        let number = NSNumber(value: relativePriceChange)
-        return fmt.string(from: number) ?? ""
     }
 
 }
@@ -70,20 +40,34 @@ struct RecentPricesView: View {
                     HStack {
                         Text(priceInfo.storeName)
                         Text(priceInfo.printDate())
-
                     }
+
                     HStack {
-                        Text(priceInfo.printPrice())
-                        Text(priceInfo.printRelativePriceChange())
-                            .foregroundStyle(
-                                priceInfo.relativePriceChange >= 0
-                                    ? .red : .green
+                        Text(
+                            priceInfo.price.formatted(.currency(code: "SEK"))
+                        )
+
+                        Text(
+                            priceInfo.relativePriceChange.formatted(
+                                .percent
+                                    .precision(.fractionLength(2))
+                                    .sign(strategy: .always())
                             )
-                        Text(priceInfo.printAbsolutePriceChange())
-                            .foregroundStyle(
-                                priceInfo.absolutePriceChange >= 0
-                                    ? .red : .green
+                        )
+                        .foregroundStyle(
+                            priceInfo.relativePriceChange >= 0
+                                ? .red : .green
+                        )
+                        Text(
+                            priceInfo.absolutePriceChange.formatted(
+                                .currency(code: "SEK")
+                                    .sign(strategy: .always())
+
                             )
+                        ).foregroundStyle(
+                            priceInfo.absolutePriceChange >= 0
+                                ? .red : .green
+                        )
                     }
                 }
             }
@@ -92,3 +76,22 @@ struct RecentPricesView: View {
     }
 }
 
+func get_date() -> Date {
+    var date = DateComponents()
+    date.year = 2025
+    date.month = 2
+    date.day = 5
+    date.timeZone = TimeZone(secondsFromGMT: 0)
+    let calendar = Calendar(identifier: .gregorian)
+    return calendar.date(from: date)!
+}
+
+#Preview {
+    RecentPricesView(prices: [
+        Price(
+            name: "Coffee", price: 12.34, absolutePriceChange: 3.12,
+            relativePriceChange: 0.0765, storeName: "Cool Store",
+            date: get_date()
+        )
+    ])
+}
