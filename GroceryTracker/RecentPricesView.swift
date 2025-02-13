@@ -2,7 +2,6 @@ import SwiftUI
 
 struct Price: Identifiable, Decodable {
     let id = UUID()
-    let name: String
     let price: Decimal
     let absolutePriceChange: Decimal
     let relativePriceChange: Decimal
@@ -12,7 +11,6 @@ struct Price: Identifiable, Decodable {
 
     private enum CodingKeys: String, CodingKey {
         case price
-        case name
         case absolutePriceChange
         case relativePriceChange
         case storeName
@@ -27,51 +25,59 @@ struct Price: Identifiable, Decodable {
 
 }
 
-typealias PricesResponse = [Price]
+struct PricesResponse: Decodable {
+    let name: String
+    let prices: [Price]
+}
 
 struct RecentPricesView: View {
-    let prices: [Price]
+    let prices: PricesResponse
 
     var body: some View {
         NavigationView {
-            List(prices, id: \.id) { priceInfo in
-                VStack(alignment: .leading) {
-                    Text(priceInfo.name)
-                    HStack {
-                        Text(priceInfo.storeName)
-                        Text(priceInfo.printDate())
-                    }
+            VStack {
+                Text(prices.name)
+                    .bold()
 
-                    HStack {
-                        Text(
-                            priceInfo.price.formatted(.currency(code: "SEK"))
-                        )
-
-                        if priceInfo.relativePriceChange != 0 {
-                            Text(
-                                priceInfo.relativePriceChange.formatted(
-                                    .percent
-                                        .precision(.fractionLength(2))
-                                        .sign(strategy: .always())
-                                )
-                            )
-                            .foregroundStyle(
-                                priceInfo.relativePriceChange >= 0
-                                    ? .red : .green
-                            )
+                List(prices.prices, id: \.id) { priceInfo in
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text(priceInfo.storeName)
+                            Text(priceInfo.printDate())
                         }
 
-                        if priceInfo.absolutePriceChange != 0 {
+                        HStack {
                             Text(
-                                priceInfo.absolutePriceChange.formatted(
-                                    .currency(code: "SEK")
-                                        .sign(strategy: .always())
-
-                                )
-                            ).foregroundStyle(
-                                priceInfo.absolutePriceChange >= 0
-                                    ? .red : .green
+                                priceInfo.price.formatted(
+                                    .currency(code: "SEK"))
                             )
+
+                            if priceInfo.relativePriceChange != 0 {
+                                Text(
+                                    priceInfo.relativePriceChange.formatted(
+                                        .percent
+                                            .precision(.fractionLength(2))
+                                            .sign(strategy: .always())
+                                    )
+                                )
+                                .foregroundStyle(
+                                    priceInfo.relativePriceChange >= 0
+                                        ? .red : .green
+                                )
+                            }
+
+                            if priceInfo.absolutePriceChange != 0 {
+                                Text(
+                                    priceInfo.absolutePriceChange.formatted(
+                                        .currency(code: "SEK")
+                                            .sign(strategy: .always())
+
+                                    )
+                                ).foregroundStyle(
+                                    priceInfo.absolutePriceChange >= 0
+                                        ? .red : .green
+                                )
+                            }
                         }
                     }
                 }
@@ -79,24 +85,4 @@ struct RecentPricesView: View {
             .navigationTitle("Recent Nearby Prices")
         }
     }
-}
-
-func get_date() -> Date {
-    var date = DateComponents()
-    date.year = 2025
-    date.month = 2
-    date.day = 5
-    date.timeZone = TimeZone(secondsFromGMT: 0)
-    let calendar = Calendar(identifier: .gregorian)
-    return calendar.date(from: date)!
-}
-
-#Preview {
-    RecentPricesView(prices: [
-        Price(
-            name: "Coffee", price: 12.34, absolutePriceChange: 3.12,
-            relativePriceChange: 0.0765, storeName: "Cool Store",
-            date: get_date()
-        )
-    ])
 }
