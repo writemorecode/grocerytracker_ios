@@ -24,11 +24,8 @@ struct StoreSelectionView: View {
                     ProgressView("Uploading store data...")
                 } else if let errorMessage {
                     ErrorView(message: errorMessage, onRetry: loadNearbyStores)
-                } else if locationManager.stores.isEmpty {
-                    EmptyStateView(onRetry: loadNearbyStores)
                 } else {
-                    StoreListView(
-                        stores: locationManager.stores, onSelect: selectStore)
+                    EmptyStateView(onRetry: loadNearbyStores)
                 }
             }
             .navigationTitle("Select Store")
@@ -39,14 +36,18 @@ struct StoreSelectionView: View {
     private func loadNearbyStores() {
         isSearchingForStores = true
         errorMessage = nil
+        let maxStoreDistance: CLLocationDistance = 1000
         locationManager.searchNearbyStores { [self] result in
             DispatchQueue.main.async {
                 self.isSearchingForStores = false
                 switch result {
                 case .success(let stores):
-                    self.locationManager.stores = stores
-                    if stores.isEmpty {
-                        self.errorMessage = "No grocery stores found nearby"
+                    if let nearestStore = stores.min(by: {
+                        $0.distance < $1.distance
+                    }), nearestStore.distance <= maxStoreDistance {
+                        selectStore(nearestStore)
+                    } else {
+                        self.errorMessage = "No nearby stores found."
                     }
                 case .failure(let error as CLError) where error.code == .denied:
                     self.errorMessage =
@@ -60,6 +61,7 @@ struct StoreSelectionView: View {
     }
 
     private func selectStore(_ store: Store) {
+        guard !isUploadingStoreData else { return }
         isUploadingStoreData = true
 
         Task {

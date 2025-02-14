@@ -133,31 +133,6 @@ struct EmptyStateView: View {
     }
 }
 
-struct StoreListView: View {
-    let stores: [Store]
-    let onSelect: (Store) -> Void
-
-    var body: some View {
-        List(stores) { store in
-            Button(action: { onSelect(store) }) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(store.name)
-                        .font(.headline)
-                    Text(store.address)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Text(
-                        MKDistanceFormatter().string(
-                            fromDistance: store.distance)
-                    )
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                }
-            }
-        }
-    }
-}
-
 func addressString(mapItem: MKMapItem) -> String {
     let placemark = mapItem.placemark
 

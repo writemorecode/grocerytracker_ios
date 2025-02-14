@@ -12,6 +12,12 @@ struct ScannerView: View {
 
     var body: some View {
         VStack(spacing: 20) {
+            if let storeName = StoreManager.shared.currentStoreName {
+                Text(storeName)
+                    .bold()
+                    .padding()
+            }
+            
             // Camera preview view
             CameraView(viewModel: viewModel)
                 .frame(height: 400)
